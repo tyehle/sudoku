@@ -1,4 +1,4 @@
-module Lib
+module Board
   ( Board
   , modify, emptyBoard
   , rows, cols, boxes
