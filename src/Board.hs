@@ -1,5 +1,5 @@
 module Board
-  ( Board
+  ( Board(..)
   , modify, emptyBoard
   , rows, cols, boxes
   ) where
