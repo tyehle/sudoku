@@ -1,6 +1,8 @@
 module Board
-  ( Board(..)
+  ( Board(..), Position
   , modify, emptyBoard
+  , fix, toIndex, isValid
+  , constrain, removeExisting, fixSingles
   , rows, cols, boxes
   ) where
 
