@@ -8,7 +8,10 @@ module Parser.Internal
 import Data.Char (digitToInt)
 import Board (Board(..))
 import Text.Parsec
-import Data.Sequence (Seq, fromList)
+import Data.Sequence (Seq)
+import qualified Data.Sequence as Seq
+import Data.Set (Set)
+import qualified Data.Set as Set
 
 
 type Parser a = Parsec String Int a
@@ -38,12 +41,12 @@ dimension = do
   putState (m*n)
   return (m, n)
 
-entry :: Parser [Int]
-entry =  (fmap return number)
-     <|> (char '_' >> fmap (enumFromTo 1) getState)
+entry :: Parser (Set Int)
+entry =  (fmap Set.singleton number)
+     <|> (char '_' >> fmap (Set.fromList . enumFromTo 1) getState)
 
-entries :: Parser (Seq [Int])
-entries = getState >>= \total -> fmap fromList $ sepEndByN (total*total) entry spaces
+entries :: Parser (Seq (Set Int))
+entries = getState >>= \total -> fmap Seq.fromList $ sepEndByN (total*total) entry spaces
 
 board :: Parser Board
 board = do

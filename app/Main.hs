@@ -1,7 +1,16 @@
 module Main
 where
 
-import Board (emptyBoard, rows, cols, boxes)
+import Parser
+-- import Board (Board)
+import System.IO
 
 main :: IO ()
-main = print emptyBoard
+main = do
+  handle <- openFile "board-3x2.txt" ReadMode
+  input <- hGetContents handle
+  putStrLn $ case parseBoard input of
+    Left err -> show err
+    Right b -> show b
+  hClose handle
+
