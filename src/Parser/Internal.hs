@@ -41,11 +41,11 @@ dimension = do
   putState (m*n)
   return (m, n)
 
-entry :: Parser (Set Int)
-entry =  (fmap Set.singleton number)
-     <|> (char '_' >> fmap (Set.fromList . enumFromTo 1) getState)
+entry :: Parser [Int]
+entry =  (fmap return number)
+     <|> (char '_' >> fmap (enumFromTo 1) getState)
 
-entries :: Parser (Seq (Set Int))
+entries :: Parser (Seq [Int])
 entries = getState >>= \total -> fmap Seq.fromList $ sepEndByN (total*total) entry spaces
 
 board :: Parser Board

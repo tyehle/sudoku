@@ -62,21 +62,21 @@ dimensionTests = testGroup "dimension"
   ]
 
 entryTests = testGroup "entry"
-  [ testCase "blank" $ testParse (putState 6 >> entry) "_" @?= Just (Set.fromList [1..6])
-  , testCase "set" $ testParse entry "12asdf" @?= Just (Set.singleton 12)
+  [ testCase "blank" $ testParse (putState 6 >> entry) "_" @?= Just [1..6]
+  , testCase "set" $ testParse entry "12asdf" @?= Just [12]
   , testCase "set remaining" $ testParse (entry >> getInput) "12asdf" @?= Just "asdf"
   ]
 
 entriesTests = testGroup "entries"
   [ testCase "trailing" $ testParse (putState 2 >> entries >> getInput) "1 2\n_ _ other" @?= Just "other"
   , testCase "too few" $ testParse (putState 6 >> entries) "1 2 _ _ 4" @?= Nothing
-  , testCase "just right" $ testParse (putState 2 >> entries) "1 2 _ _" @?= Just (Seq.fromList [Set.singleton 1, Set.singleton 2, Set.fromList [1,2], Set.fromList [1,2]])
+  , testCase "just right" $ testParse (putState 2 >> entries) "1 2 _ _" @?= Just (Seq.fromList [[1], [2], [1,2], [1,2]])
   ]
 
 boardTests = testGroup "board"
-  [ testCase "trailing" $ testParse board "1 2\n1 _\n2 1 " @?= Just (Board 1 2 (Seq.fromList [Set.singleton 1, Set.fromList [1,2], Set.singleton 2, Set.singleton 1]))
+  [ testCase "trailing" $ testParse board "1 2\n1 _\n2 1 " @?= Just (Board 1 2 (Seq.fromList [[1], [1,2], [2], [1]]))
   , testCase "trailing bad" $ testParse board "1 2\n1 _\n2 1 other" @?= Nothing
-  , testCase "preceding" $ testParse board "   1 2\n1 _\n2 1 " @?= Just (Board 1 2 (Seq.fromList [Set.singleton 1, Set.fromList [1,2], Set.singleton 2, Set.singleton 1]))
+  , testCase "preceding" $ testParse board "   1 2\n1 _\n2 1 " @?= Just (Board 1 2 (Seq.fromList [[1], [1,2], [2], [1]]))
   ]
 
 succeeded :: Either f s -> Bool

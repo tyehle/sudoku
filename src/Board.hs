@@ -1,17 +1,16 @@
 module Board
   ( Board(..), Position
+  , emptyBoard
   , padString, groupN
-  , modify, emptyBoard
-  , fix, toIndex, isValid
+  -- , modify
+  -- , fix, toIndex, isValid
   , constrain, removeExisting, fixSingles
   , rows, cols, boxes
   ) where
 
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.List (intercalate, (\\))
+import Data.List (intercalate, (\\), foldl')
 import Data.Foldable (toList)
 
 
@@ -19,7 +18,7 @@ import Data.Foldable (toList)
 -- (row, col)
 type Position = (Int, Int)
 
-data Board = Board Int Int (Seq (Set Int)) deriving (Eq)
+data Board = Board Int Int (Seq [Int]) deriving (Eq)
 
 instance Show Board where
   show (Board m n contents) = showBoard m n (map showOptions (toList contents))
@@ -32,8 +31,8 @@ padString width s | even toAdd = concat [halfSpace, s, halfSpace]
     toAdd = width - (length s)
     halfSpace = replicate (toAdd `quot` 2) ' '
 
-showOptions :: Set Int -> String
-showOptions options = intercalate "," (map show (Set.toList options))
+showOptions :: [Int] -> String
+showOptions options = intercalate "," (map show options)
 
 groupN :: Int -> [a] -> [[a]]
 groupN n xs | n < 1          = []
@@ -60,28 +59,29 @@ showBoard m n contents = concat [top, "\n", blank, "\nâ”‚  ", bandDividors, "  â
 
 
 emptyBoard :: Board
-emptyBoard = Board 3 3 (Seq.replicate (9*9) (Set.fromList [1..9]))
+emptyBoard = Board 3 3 (Seq.replicate (9*9) [1..9])
 
 
 
-modify :: Int -> (Set Int -> Set Int) -> Board -> Board
-modify pos updater (Board m n contents) = Board m n (Seq.update pos updated contents)
+modify :: ([Int] -> [Int]) -> Board -> Position -> Board
+modify updater (Board m n contents) pos = Board m n (Seq.update index updated contents)
   where
-    updated = updater (Seq.index contents pos)
+    index = toIndex m n pos
+    updated = updater (Seq.index contents index)
 
-fix :: Int -> Int -> Board -> Board
-fix pos value board = modify pos (const (Set.singleton value)) board
+-- fix :: Int -> Int -> Board -> Board
+-- fix pos value board = modify pos (const (Set.singleton value)) board
 
 toIndex :: Int -> Int -> Position -> Int
 toIndex m n (row, col) = (m*n)*row + col
 
-isValid :: Board -> Bool
-isValid board = any null constrained
-  where
-    Board _ _ constrained = constrain board
+getCell :: Board -> Position -> [Int]
+getCell (Board m n contents) pos = Seq.index contents $ toIndex m n pos
 
-without :: [Int] -> [Int] -> [Int]
-without elems remove = elems \\ remove
+-- isValid :: Board -> Bool
+-- isValid board = any null constrained
+--   where
+--     Board _ _ constrained = constrain board
 
 
 
@@ -89,11 +89,21 @@ constrain :: Board -> Board
 constrain board = if board == updated then board else constrain updated
   where updated = removeExisting . fixSingles $ board
 
+
 removeExisting :: Board -> Board
-removeExisting (Board m n contents) = Board m n contents
+removeExisting board@(Board m n contents) = doGroup (rows m n) $ doGroup (cols m n) $ doGroup (boxes m n) board
   where
-    ind = toIndex m n
-    changedRows = "not done"
+    doGroup poss b = foldl' removeDefinedFromGroup b poss
+
+singlesOnly :: [a] -> [a]
+singlesOnly xs | length xs == 1 = xs
+               | otherwise      = []
+
+removeDefinedFromGroup :: Board -> [Position] -> Board
+removeDefinedFromGroup board cells = foldl' (modify (\\ defined)) board cells 
+  where
+    defined = map (getCell board) cells >>= singlesOnly
+
 
 fixSingles :: Board -> Board
 fixSingles board = board
