@@ -10,7 +10,7 @@ module Board
 
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
-import Data.List (intercalate, (\\), foldl')
+import Data.List (intercalate, (\\), foldl', group, sort, intersect)
 import Data.Foldable (toList)
 
 
@@ -69,6 +69,10 @@ modify updater (Board m n contents) pos = Board m n (Seq.update index updated co
     index = toIndex m n pos
     updated = updater (Seq.index contents index)
 
+maybeModify :: Maybe [Int] -> Board -> Position -> Board
+maybeModify (Just new) (Board m n contents) pos = Board m n (Seq.update (toIndex m n pos) new contents)
+maybeModify Nothing board _ = board
+
 -- fix :: Int -> Int -> Board -> Board
 -- fix pos value board = modify pos (const (Set.singleton value)) board
 
@@ -87,26 +91,39 @@ getCell (Board m n contents) pos = Seq.index contents $ toIndex m n pos
 
 constrain :: Board -> Board
 constrain board = if board == updated then board else constrain updated
-  where updated = removeExisting . fixSingles $ board
+  where updated = (opOnGroups removeExisting) $ (opOnGroups fixSingles) $ board
 
-
-removeExisting :: Board -> Board
-removeExisting board@(Board m n contents) = doGroup (rows m n) $ doGroup (cols m n) $ doGroup (boxes m n) board
+opOnGroups :: (Board -> [Position] -> Board) -> Board -> Board
+opOnGroups op board@(Board m n contents) = doGroup (rows m n) $ doGroup (cols m n) $ doGroup (boxes m n) board
   where
-    doGroup poss b = foldl' removeDefinedFromGroup b poss
+    doGroup poss b = foldl' op b poss
+
 
 singlesOnly :: [a] -> [a]
 singlesOnly xs | length xs == 1 = xs
                | otherwise      = []
 
-removeDefinedFromGroup :: Board -> [Position] -> Board
-removeDefinedFromGroup board cells = foldl' (modify (\\ defined)) board cells 
+removeExisting :: Board -> [Position] -> Board
+removeExisting board cells = foldl' (modify (\\ defined)) board unknownPositions
   where
     defined = map (getCell board) cells >>= singlesOnly
+    unknownPositions = filter (\c -> length (getCell board c) > 1) cells
+
+tryFilterExisting :: [Int] -> Board -> Position -> Board
+tryFilterExisting defined = modify (\\ defined)
 
 
-fixSingles :: Board -> Board
-fixSingles board = board
+fixSingles :: Board -> [Position] -> Board
+fixSingles board cells = foldr (\pos -> \b -> maybeModify (tryFix toFix b pos) board pos) board unknownPositions
+  where
+    unknownPositions = filter (\c -> length (getCell board c) > 1) cells
+    toFix = (group . sort . concat) (map (getCell board) cells) >>= singlesOnly
+
+tryFix :: [Int] -> Board -> Position -> Maybe [Int]
+tryFix toFix board pos | length intersection > 0 = Just intersection
+                       | otherwise               = Nothing
+  where
+    intersection = intersect (getCell board pos) toFix
 
 
 

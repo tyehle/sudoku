@@ -2,7 +2,7 @@ module Main
 where
 
 import Parser
--- import Board (Board)
+import Board (Board, constrain)
 import System.IO
 
 main :: IO ()
@@ -11,6 +11,6 @@ main = do
   input <- hGetContents handle
   putStrLn $ case parseBoard input of
     Left err -> show err
-    Right b -> show b
+    Right b -> show . constrain $ b
   hClose handle
 
