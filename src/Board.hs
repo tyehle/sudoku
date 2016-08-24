@@ -8,8 +8,8 @@ import Data.Foldable (toList)
 
 data Board = Board Int Int (Seq [Int]) deriving (Eq)
 
-empty :: Board
-empty = Board 3 3 (Seq.replicate (9*9) [1..9])
+empty :: Int -> Int -> Board
+empty m n = Board m n (Seq.replicate (m*n) [1..(m*n)])
 
 -- (row, col)
 type Position = (Int, Int)
@@ -64,9 +64,6 @@ maybeModify :: Maybe [Int] -> Board -> Position -> Board
 maybeModify (Just new) (Board m n contents) pos = Board m n (Seq.update (toIndex m n pos) new contents)
 maybeModify Nothing board _ = board
 
--- fix :: Int -> Int -> Board -> Board
--- fix pos value board = modify pos (const (Set.singleton value)) board
-
 toIndex :: Int -> Int -> Position -> Int
 toIndex m n (row, col) = (m*n)*row + col
 
@@ -120,11 +117,11 @@ tryFix toFix board pos | length intersection > 0 = Just intersection
 
 
 rows :: Int -> Int -> [[Position]]
-rows m n = map (\col -> map (\row -> (row, col)) indices) indices
+rows m n = map (\row -> map (\col -> (row, col)) indices) indices
   where indices = [0..m*n-1]
 
 cols :: Int -> Int -> [[Position]]
-cols m n = map (\row -> map (\col -> (row, col)) indices) indices
+cols m n = map (\col -> map (\row -> (row, col)) indices) indices
   where indices = [0..m*n-1]
 
 boxes :: Int -> Int -> [[Position]]

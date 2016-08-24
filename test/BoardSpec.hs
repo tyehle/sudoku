@@ -7,7 +7,7 @@ import Test.Tasty.HUnit
 
 import Board
 
-boardTests = testGroup "board tests" [padStringTests, groupNTests, showOptionsTests, showBoardTests]
+boardTests = testGroup "board tests" [padStringTests, groupNTests, showOptionsTests, showBoardTests, rowsTests, colsTests, boxesTests]
 
 
 
@@ -58,4 +58,31 @@ showBoardTests = testGroup "showBoard"
                                                           \│  31  32  33  │  34  35  36  │\n\
                                                           \│              │              │\n\
                                                           \└──────────────┴──────────────┘"
+  ]
+
+rowsTests = testGroup "rows"
+  [ testCase "1x2" $ rows 1 2 @?= [[(0, 0), (0, 1)], [(1, 0), (1, 1)]]
+  , testCase "0x0" $ rows 0 0 @?= []
+  ]
+
+colsTests = testGroup "cols"
+  [ testCase "1x2" $ cols 1 2 @?= [[(0, 0), (1, 0)], [(0, 1), (1, 1)]]
+  , testCase "0x0" $ cols 0 0 @?= []
+  ]
+
+--  1x2                   2x1
+-- ┌─────┬─────┐        ┌────────┐
+-- │     │     │        │        │
+-- │  1  │  2  │        │  1  2  │
+-- │     │     │        │        │
+-- │  2  │  1  │        ├────────┤
+-- │     │     │        │        │
+-- └─────┴─────┘        │  2  1  │
+--                      │        │
+--                      └────────┘
+
+boxesTests = testGroup "boxes"
+  [ testCase "1x2" $ boxes 1 2 @?= [[(0, 0), (1, 0)], [(0, 1), (1, 1)]]
+  , testCase "2x1" $ boxes 2 1 @?= [[(0, 0), (0, 1)], [(1, 0), (1, 1)]]
+  , testCase "0x0" $ boxes 0 0 @?= []
   ]
