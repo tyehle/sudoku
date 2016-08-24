@@ -61,13 +61,15 @@ showBoardTests = testGroup "showBoard"
   ]
 
 rowsTests = testGroup "rows"
-  [ testCase "1x2" $ rows 1 2 @?= [[(0, 0), (0, 1)], [(1, 0), (1, 1)]]
-  , testCase "0x0" $ rows 0 0 @?= []
+  [ testCase "0x0" $ rows 0 0 @?= []
+  , testCase "1x2" $ rows 1 2 @?= [[(0, 0), (0, 1)], [(1, 0), (1, 1)]]
+  , testCase "2x2" $ rows 2 2 @?= [[(0, 0), (0, 1), (0, 2), (0, 3)], [(1, 0), (1, 1), (1, 2), (1, 3)], [(2, 0), (2, 1), (2, 2), (2, 3)], [(3, 0), (3, 1), (3, 2), (3, 3)]]
   ]
 
 colsTests = testGroup "cols"
-  [ testCase "1x2" $ cols 1 2 @?= [[(0, 0), (1, 0)], [(0, 1), (1, 1)]]
-  , testCase "0x0" $ cols 0 0 @?= []
+  [ testCase "0x0" $ cols 0 0 @?= []
+  , testCase "1x2" $ cols 1 2 @?= [[(0, 0), (1, 0)], [(0, 1), (1, 1)]]
+  , testCase "2x2" $ cols 2 2 @?= [[(0, 0), (1, 0), (2, 0), (3, 0)], [(0, 1), (1, 1), (2, 1), (3, 1)], [(0, 2), (1, 2), (2, 2), (3, 2)], [(0, 3), (1, 3), (2, 3), (3, 3)]]
   ]
 
 --  1x2                   2x1
@@ -82,7 +84,9 @@ colsTests = testGroup "cols"
 --                      └────────┘
 
 boxesTests = testGroup "boxes"
-  [ testCase "1x2" $ boxes 1 2 @?= [[(0, 0), (1, 0)], [(0, 1), (1, 1)]]
+  [ testCase "0x0" $ boxes 0 0 @?= []
+  , testCase "1x2" $ boxes 1 2 @?= [[(0, 0), (1, 0)], [(0, 1), (1, 1)]]
   , testCase "2x1" $ boxes 2 1 @?= [[(0, 0), (0, 1)], [(1, 0), (1, 1)]]
-  , testCase "0x0" $ boxes 0 0 @?= []
+  , testCase "3x2 upper left" $ head (boxes 3 2) @?= [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
+  , testCase "3x2 middle right" $ (boxes 3 2) !! 3 @?= [(2, 3), (2, 4), (2, 5), (3, 3), (3, 4), (3, 5)]
   ]

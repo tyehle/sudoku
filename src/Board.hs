@@ -129,5 +129,5 @@ boxes m n = map boxFromCorner corners
   where
     indicesN = [0..n-1]
     indicesM = [0..m-1]
-    corners = concat $ map (\col -> map (\row -> (row*n, col*m)) indicesM) indicesN
-    boxFromCorner (y, x) = concat $ map (\col -> map (\row -> (row + y, col + x)) indicesN) indicesM
+    corners = concat $ map (\row -> map (\col -> (row*n, col*m)) indicesN) indicesM
+    boxFromCorner (y, x) = concat $ map (\row -> map (\col -> (row + y, col + x)) indicesM) indicesN
