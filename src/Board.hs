@@ -60,9 +60,9 @@ modify updater (Board m n contents) pos = Board m n (Seq.update index updated co
     index = toIndex m n pos
     updated = updater (Seq.index contents index)
 
-maybeModify :: Maybe [Int] -> Board -> Position -> Board
-maybeModify (Just new) (Board m n contents) pos = Board m n (Seq.update (toIndex m n pos) new contents)
-maybeModify Nothing board _ = board
+-- maybeModify :: Maybe [Int] -> Board -> Position -> Board
+-- maybeModify (Just new) (Board m n contents) pos = Board m n (Seq.update (toIndex m n pos) new contents)
+-- maybeModify Nothing board _ = board
 
 toIndex :: Int -> Int -> Position -> Int
 toIndex m n (row, col) = (m*n)*row + col
@@ -98,21 +98,18 @@ removeExisting board cells = foldl' (modify (\\ defined)) board unknownPositions
     defined = map (getCell board) cells >>= singlesOnly
     unknownPositions = filter (\c -> length (getCell board c) > 1) cells
 
-tryFilterExisting :: [Int] -> Board -> Position -> Board
-tryFilterExisting defined = modify (\\ defined)
-
 
 fixSingles :: Board -> [Position] -> Board
-fixSingles board cells = board --foldr (\pos -> \b -> maybeModify (tryFix toFix b pos) board pos) board unknownPositions
+fixSingles board cells = foldl' (modify (maybeFix toFix)) board unknownPositions
   where
     unknownPositions = filter (\c -> length (getCell board c) > 1) cells
     toFix = (group . sort . concat) (map (getCell board) cells) >>= singlesOnly
 
-tryFix :: [Int] -> Board -> Position -> Maybe [Int]
-tryFix toFix board pos | length intersection > 0 = Just intersection
-                       | otherwise               = Nothing
-  where
-    intersection = intersect (getCell board pos) toFix
+maybeFix :: [Int] -> [Int] -> [Int]
+maybeFix toFix current | length intersection > 0 = intersection
+                       | otherwise               = current
+  where 
+    intersection = intersect current toFix
 
 
 

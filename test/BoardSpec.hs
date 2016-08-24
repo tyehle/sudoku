@@ -8,7 +8,19 @@ import qualified Data.Sequence as Seq
 
 import Board
 
-boardTests = testGroup "board tests" [padStringTests, groupNTests, showOptionsTests, showBoardTests, rowsTests, colsTests, boxesTests, emptyTests, maybeModifyTests]
+boardTests = testGroup "board tests"
+  [padStringTests
+  , groupNTests
+  , showOptionsTests
+  , showBoardTests
+  , rowsTests
+  , colsTests
+  , boxesTests
+  , emptyTests
+  , modifyTests
+  , toIndexTests
+  , getCellTests
+  ]
 
 
 
@@ -97,7 +109,16 @@ emptyTests = testGroup "empty"
   , testCase "1x2" $ empty 1 2 @?= Board 1 2 (Seq.fromList [[1,2], [1,2], [1,2], [1,2]])
   ]
 
-maybeModifyTests = testGroup "maybeModify"
-  [ testCase "nothing" $ maybeModify Nothing (empty 3 2) (0, 0) @?= (empty 3 2)
-  , testCase "do it" $ maybeModify (Just [1]) (empty 1 2) (0, 1) @?= Board 1 2 (Seq.fromList [[1, 2], [1], [1, 2], [1, 2]])
+modifyTests = testGroup "modify"
+  [
+  ]
+
+toIndexTests = testGroup "toIndex"
+  [ testCase "zero" $ toIndex 0 0 (0, 0) @?= 0
+  , testCase "row 0" $ toIndex 3 3 (0, 2) @?= 2
+  , testCase "row 3" $ toIndex 3 2 (3, 4) @?= 22
+  ]
+
+getCellTests = testGroup "getCell"
+  [ testCase "(0, 1)" $ getCell (Board 1 2 (Seq.fromList [[0], [1], [2], [3]])) (0, 1) @?= [1]
   ]
