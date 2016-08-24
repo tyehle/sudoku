@@ -14,7 +14,6 @@ import qualified Data.Sequence as Seq
 import qualified Data.Set as Set
 
 
-type Parser a = Parsec String Int a
 
 testParse :: Parser a -> String -> Maybe a
 testParse p input = case runParser p 0 "test string" input of

@@ -1,12 +1,4 @@
-module Board
-  ( Board(..), Position
-  , emptyBoard
-  , padString, groupN
-  -- , modify
-  -- , fix, toIndex, isValid
-  , constrain, removeExisting, fixSingles
-  , rows, cols, boxes
-  ) where
+module Board where
 
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
@@ -14,11 +6,13 @@ import Data.List (intercalate, (\\), foldl', group, sort, intersect)
 import Data.Foldable (toList)
 
 
+data Board = Board Int Int (Seq [Int]) deriving (Eq)
+
+empty :: Board
+empty = Board 3 3 (Seq.replicate (9*9) [1..9])
 
 -- (row, col)
 type Position = (Int, Int)
-
-data Board = Board Int Int (Seq [Int]) deriving (Eq)
 
 instance Show Board where
   show (Board m n contents) = showBoard m n (map showOptions (toList contents))
@@ -42,6 +36,7 @@ groupN n xs | n < 1          = []
 
 
 showBoard :: Int -> Int -> [String] -> String
+showBoard 0 0 [] = "┌┐\n││\n└┘"
 showBoard m n contents = concat [top, "\n", blank, "\n│  ", bandDividors, "  │\n", blank, "\n", bottom]
   where
     hSpan fill l c r = concat [l, intercalate c $ replicate n (replicate (m*(longest+2)+2) fill), r]
@@ -56,10 +51,6 @@ showBoard m n contents = concat [top, "\n", blank, "\n│  ", bandDividors, "  �
     rowDividors = map (intercalate (concat ["  │\n", blank, "\n│  "])) $ groupN n stackDividors
     bandDividors = intercalate (concat ["  │\n", blank, "\n", middle, "\n",blank, "\n│  "]) rowDividors
 
-
-
-emptyBoard :: Board
-emptyBoard = Board 3 3 (Seq.replicate (9*9) [1..9])
 
 
 
@@ -93,6 +84,7 @@ constrain :: Board -> Board
 constrain board = if board == updated then board else constrain updated
   where updated = (opOnGroups removeExisting) $ (opOnGroups fixSingles) $ board
 
+
 opOnGroups :: (Board -> [Position] -> Board) -> Board -> Board
 opOnGroups op board@(Board m n contents) = doGroup (rows m n) $ doGroup (cols m n) $ doGroup (boxes m n) board
   where
@@ -114,7 +106,7 @@ tryFilterExisting defined = modify (\\ defined)
 
 
 fixSingles :: Board -> [Position] -> Board
-fixSingles board cells = foldr (\pos -> \b -> maybeModify (tryFix toFix b pos) board pos) board unknownPositions
+fixSingles board cells = board --foldr (\pos -> \b -> maybeModify (tryFix toFix b pos) board pos) board unknownPositions
   where
     unknownPositions = filter (\c -> length (getCell board c) > 1) cells
     toFix = (group . sort . concat) (map (getCell board) cells) >>= singlesOnly

@@ -1,9 +1,4 @@
-module Parser.Internal
-  ( sepByN, sepEndByN
-  , number
-  , dimension, entry, entries
-  , board
-  ) where
+module Parser.Internal where
 
 import Data.Char (digitToInt)
 import Board (Board(..))
