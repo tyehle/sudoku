@@ -27,6 +27,7 @@ boardTests = testGroup "board tests"
   , removeExistingTests
   , fixSinglesTests
   , maybeFixTests
+  , isValidTests
   ]
 
 
@@ -162,4 +163,9 @@ maybeFixTests = testGroup "maybeFix"
   , testCase "single match" $ maybeFix [1] [2, 1, 3] @?= [1]
   , testCase "no match" $ maybeFix [1] [2,3,4] @?= [2,3,4]
   , testCase "double match" $ maybeFix [2,1] [3,1,2,4] @?= [1,2]
+  ]
+
+isValidTests = testGroup "isValid"
+  [ testCase "good" $ isValid (Board 1 2 (Seq.fromList [[1], [2], [1], [2]])) @?= True
+  , testCase "bad" $ isValid (Board 1 2 (Seq.fromList [[1,2], [1], [2], []])) @?= False
   ]

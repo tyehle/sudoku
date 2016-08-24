@@ -66,10 +66,8 @@ toIndex m n (row, col) = (m*n)*row + col
 getCell :: Board -> Position -> [Int]
 getCell (Board m n contents) pos = Seq.index contents $ toIndex m n pos
 
--- isValid :: Board -> Bool
--- isValid board = any null constrained
---   where
---     Board _ _ constrained = constrain board
+isValid :: Board -> Bool
+isValid (Board _ _ contents) = not $ any null contents
 
 
 
