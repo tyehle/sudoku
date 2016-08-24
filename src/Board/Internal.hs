@@ -60,10 +60,6 @@ modify updater (Board m n contents) pos = Board m n (Seq.update index updated co
     index = toIndex m n pos
     updated = updater (Seq.index contents index)
 
--- maybeModify :: Maybe [Int] -> Board -> Position -> Board
--- maybeModify (Just new) (Board m n contents) pos = Board m n (Seq.update (toIndex m n pos) new contents)
--- maybeModify Nothing board _ = board
-
 toIndex :: Int -> Int -> Position -> Int
 toIndex m n (row, col) = (m*n)*row + col
 
