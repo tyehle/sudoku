@@ -7,6 +7,7 @@ import Test.Tasty.HUnit
 import qualified Data.Sequence as Seq
 
 import Board
+import Board.Internal
 
 boardTests = testGroup "board tests"
   [padStringTests
