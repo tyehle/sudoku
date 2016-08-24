@@ -4,10 +4,11 @@ module BoardSpec
 
 import Test.Tasty
 import Test.Tasty.HUnit
+import qualified Data.Sequence as Seq
 
 import Board
 
-boardTests = testGroup "board tests" [padStringTests, groupNTests, showOptionsTests, showBoardTests, rowsTests, colsTests, boxesTests]
+boardTests = testGroup "board tests" [padStringTests, groupNTests, showOptionsTests, showBoardTests, rowsTests, colsTests, boxesTests, emptyTests, maybeModifyTests]
 
 
 
@@ -89,4 +90,14 @@ boxesTests = testGroup "boxes"
   , testCase "2x1" $ boxes 2 1 @?= [[(0, 0), (0, 1)], [(1, 0), (1, 1)]]
   , testCase "3x2 upper left" $ head (boxes 3 2) @?= [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
   , testCase "3x2 middle right" $ (boxes 3 2) !! 3 @?= [(2, 3), (2, 4), (2, 5), (3, 3), (3, 4), (3, 5)]
+  ]
+
+emptyTests = testGroup "empty"
+  [ testCase "zero" $ empty 0 0 @?= Board 0 0 Seq.empty
+  , testCase "1x2" $ empty 1 2 @?= Board 1 2 (Seq.fromList [[1,2], [1,2], [1,2], [1,2]])
+  ]
+
+maybeModifyTests = testGroup "maybeModify"
+  [ testCase "nothing" $ maybeModify Nothing (empty 3 2) (0, 0) @?= (empty 3 2)
+  , testCase "do it" $ maybeModify (Just [1]) (empty 1 2) (0, 1) @?= Board 1 2 (Seq.fromList [[1, 2], [1], [1, 2], [1, 2]])
   ]

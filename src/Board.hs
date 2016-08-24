@@ -9,7 +9,7 @@ import Data.Foldable (toList)
 data Board = Board Int Int (Seq [Int]) deriving (Eq)
 
 empty :: Int -> Int -> Board
-empty m n = Board m n (Seq.replicate (m*n) [1..(m*n)])
+empty m n = Board m n (Seq.replicate (m*m*n*n) [1..(m*n)])
 
 -- (row, col)
 type Position = (Int, Int)
