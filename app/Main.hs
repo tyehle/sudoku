@@ -1,9 +1,11 @@
 module Main
 where
 
-import Parser
-import Board (Board, constrain)
 import System.IO
+
+import Parser
+import Board
+import Strategies
 
 main :: IO ()
 main = do

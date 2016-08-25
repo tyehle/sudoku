@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Board, Parser, Parser.Internal, Board.Internal
+  exposed-modules:     Board, Parser, Parser.Internal, Strategies, Strategies.Internal
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , parsec
@@ -33,7 +33,7 @@ test-suite sudoku-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       BoardSpec, ParserSpec
+  other-modules:       BoardSpec, ParserSpec, StrategiesSpec
   build-depends:       base
                      , sudoku
                      , tasty
