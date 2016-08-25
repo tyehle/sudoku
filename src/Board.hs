@@ -3,7 +3,7 @@ module Board
   , Position(..)
   , prettyPrint, padString, showOptions, groupN, showBoard
   , modify, toIndex, getCell
-  , isValid
+  , isValid, isSolved
   , rows, cols, boxes
   ) where
 
@@ -81,7 +81,10 @@ getCell (Board m n contents) pos = Seq.index contents $ toIndex m n pos
 
 
 isValid :: Board -> Bool
-isValid (Board _ _ contents) = not $ any null contents
+isValid (Board _ _ contents) = all (not . null) contents
+
+isSolved :: Board -> Bool
+isSolved (Board _ _ contents) = all ((== 1) . length) contents
 
 
 

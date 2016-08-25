@@ -20,14 +20,14 @@ removeSolved :: Board -> [Position] -> Board
 removeSolved board cells = foldl' (modify (\\ defined)) board unknownPositions
   where
     defined = map (getCell board) cells >>= singlesOnly
-    unknownPositions = filter (\c -> length (getCell board c) > 1) cells
+    unknownPositions = filter ((> 1) . length . getCell board) cells
 
 
 
 fixSingles :: Board -> [Position] -> Board
 fixSingles board cells = foldl' (modify (maybeFix toFix)) board unknownPositions
   where
-    unknownPositions = filter (\c -> length (getCell board c) > 1) cells
+    unknownPositions = filter ((> 1) . length . getCell board) cells
     toFix = (group . sort . concat) (map (getCell board) cells) >>= singlesOnly
 
 maybeFix :: [Int] -> [Int] -> [Int]
