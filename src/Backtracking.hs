@@ -19,10 +19,9 @@ solver board | isSolved constrained        = return $ Just constrained
                   with <- solver $ modify (const [chosenValue]) constrained chosenCell
                   case with of
                     Nothing -> solver $ modify (delete chosenValue) constrained chosenCell
-                    Just solved -> return $ Just solved
+                    Just solved -> return with
   where
     constrained = constrain board
-
 
 
 
@@ -40,16 +39,9 @@ collectMostConstrained board (pos:others) size found | currentSize < size  = col
     currentSize = length $ getCell board pos
 
 
-branch :: Board -> Position -> Int -> (Board, Board)
-branch board pos value = (with, without)
-  where
-    with = modify (const [value]) board pos
-    without = modify (delete value) board pos
-
-
 choice :: [a] -> State StdGen a
-choice items = fmap ((items !!) . (subtract 1)) $ dieRoll $ length items
+choice items = fmap (items !!) $ dieRoll $ length items
 
 
 dieRoll :: Int -> State StdGen Int
-dieRoll upper = state $ randomR (1,upper)
+dieRoll upper = state $ randomR (0,upper-1)
