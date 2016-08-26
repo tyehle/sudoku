@@ -34,8 +34,8 @@ padStringTests = testGroup "padString"
 
 groupNTests = testGroup "groupN"
   [ testCase "matched" $ groupN 2 [1..10] @?= [[1,2], [3,4], [5,6], [7,8], [9,10]]
-  , testCase "zero length" $ length (groupN 0 [1,2,3]) @?= 0
-  , testCase "zero input" $ length (groupN 1 []) @?= 0
+  , testCase "zero length" $ groupN 0 [1,2,3] @?= []
+  , testCase "zero input" $ groupN 1 [] @?= ([] :: [[Int]])
   , testCase "unmatched" $ groupN 2 [1..5] @?= [[1,2], [3,4], [5]]
   ]
 

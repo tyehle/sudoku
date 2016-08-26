@@ -26,13 +26,15 @@ prependIndices board@(Board m n contents) poss = foldl' prependIndex board (zip 
   where
     prependIndex b (pos, i) = modify (i:) b pos
 
+
+
 opOnGroupsTests = testGroup "opOnGroups"
   [ testCase "prepend index" $ opOnGroups prependIndices (Board 1 2 (Seq.fromList [[], [], [], []])) @?= Board 1 2 (Seq.fromList [[0, 0, 0], [1, 0, 0], [0, 1, 1], [1, 1, 1]])
   ]
 
 singlesOnlyTests = testGroup "singlesOnly"
   [ testCase "single" $ singlesOnly [1] @?= [1]
-  , testCase "zero" $ length (singlesOnly []) @?= 0
+  , testCase "zero" $ singlesOnly [] @?= ([] :: [Int])
   , testCase "three" $ singlesOnly [1,2,3] @?= []
   ]
 
@@ -48,7 +50,7 @@ fixSinglesTests = testGroup "fixSingles"
 
 maybeFixTests = testGroup "maybeFix"
   [ testCase "empty toFix" $ maybeFix [] [1,2,3] @?= [1,2,3]
-  , testCase "empty current" $ length (maybeFix [1,2] []) @?= 0
+  , testCase "empty current" $ maybeFix [1,2] [] @?= []
   , testCase "single match" $ maybeFix [1] [2, 1, 3] @?= [1]
   , testCase "no match" $ maybeFix [1] [2,3,4] @?= [2,3,4]
   , testCase "double match" $ maybeFix [2,1] [3,1,2,4] @?= [1,2]

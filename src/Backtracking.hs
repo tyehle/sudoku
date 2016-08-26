@@ -39,9 +39,12 @@ collectMostConstrained board (pos:others) size found | currentSize < size  = col
     currentSize = length $ getCell board pos
 
 
+
 choice :: [a] -> State StdGen a
+choice []    = error "cannot choose from an empty list"
 choice items = fmap (items !!) $ dieRoll $ length items
 
 
 dieRoll :: Int -> State StdGen Int
-dieRoll upper = state $ randomR (0,upper-1)
+dieRoll upper | upper < 1 = return 0
+              | otherwise = state $ randomR (0,upper-1)
