@@ -7,17 +7,17 @@ import Board
 
 
 constrain :: Board -> Board
-constrain = execStrats [opOnGroups removeSolved, opOnGroups fixSingles]
+constrain = execStrats [removeSolved, fixSingles, singleBox]
 
 
 
 execStrats :: [Board -> Board] -> Board -> Board
-execStrats strats input = case bindAll input (map failWhenChanged strats) of
+execStrats strats input = case composeM input (map failWhenChanged strats) of
   Left changed -> execStrats strats changed
   Right done -> done
 
-bindAll :: (Foldable t, Monad m) => a -> t (a -> m a) -> m a
-bindAll start cs = foldr (=<<) (return start) cs
+composeM :: (Foldable t, Monad m) => a -> t (a -> m a) -> m a
+composeM start cs = foldr (=<<) (return start) cs
 
 failWhenChanged :: (Board -> Board) -> Board -> Either Board Board
 failWhenChanged fn input | changed == input = Right input

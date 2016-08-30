@@ -17,6 +17,9 @@ strategiesTests = testGroup "board tests"
   , removeSolvedTests
   , fixSinglesTests
   , maybeFixTests
+  , singleBoxGroupsTests
+  , singleBoxLineTests
+  , singleBoxTests
   ]
 
 
@@ -29,7 +32,7 @@ prependIndices board@(Board m n contents) poss = foldl' prependIndex board (zip 
 
 
 opOnGroupsTests = testGroup "opOnGroups"
-  [ testCase "prepend index" $ opOnGroups prependIndices (Board 1 2 (Seq.fromList [[], [], [], []])) @?= Board 1 2 (Seq.fromList [[0, 0, 0], [1, 0, 0], [0, 1, 1], [1, 1, 1]])
+  [ testCase "prepend index" $ opOnGroups prependIndices [rows, cols, boxes] (Board 1 2 (Seq.fromList [[], [], [], []])) @?= Board 1 2 (Seq.fromList [[0, 0, 0], [0, 0, 1], [1, 1, 0], [1, 1, 1]])
   ]
 
 singlesOnlyTests = testGroup "singlesOnly"
@@ -39,13 +42,13 @@ singlesOnlyTests = testGroup "singlesOnly"
   ]
 
 removeSolvedTests = testGroup "removeSolved"
-  [ testCase "in order" $ removeSolved (Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [1, 2]])) [(0, 0), (0, 1)] @?= Board 1 2 (Seq.fromList [[1], [2], [2, 1], [1, 2]])
-  , testCase "out of order" $ removeSolved (Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [2, 1]])) [(0, 1), (1, 1)] @?= Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [1]])
+  [ testCase "in order" $ removeSolvedGroup (Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [1, 2]])) [(0, 0), (0, 1)] @?= Board 1 2 (Seq.fromList [[1], [2], [2, 1], [1, 2]])
+  , testCase "out of order" $ removeSolvedGroup (Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [2, 1]])) [(0, 1), (1, 1)] @?= Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [1]])
   ]
 
 fixSinglesTests = testGroup "fixSingles"
-  [ testCase "in order" $ fixSingles (Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [1, 2]])) [(0, 0), (0, 1)] @?= Board 1 2 (Seq.fromList [[1], [2], [2, 1], [1, 2]])
-  , testCase "out of order" $ fixSingles (Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [2, 1]])) [(0, 1), (1, 1)] @?= Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [1]])
+  [ testCase "in order" $ fixSinglesGroup (Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [1, 2]])) [(0, 0), (0, 1)] @?= Board 1 2 (Seq.fromList [[1], [2], [2, 1], [1, 2]])
+  , testCase "out of order" $ fixSinglesGroup (Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [2, 1]])) [(0, 1), (1, 1)] @?= Board 1 2 (Seq.fromList [[1, 2], [2], [2, 1], [1]])
   ]
 
 maybeFixTests = testGroup "maybeFix"
@@ -54,4 +57,41 @@ maybeFixTests = testGroup "maybeFix"
   , testCase "single match" $ maybeFix [1] [2, 1, 3] @?= [1]
   , testCase "no match" $ maybeFix [1] [2,3,4] @?= [2,3,4]
   , testCase "double match" $ maybeFix [2,1] [3,1,2,4] @?= [1,2]
+  ]
+
+
+singleBoxBoard = Board 3 2 (Seq.fromList [ [1,2], [3], [1,4], [5], [6], [2,4]
+                                         , [1,2,6], [5], [1,4,6], [1,4,3], [1,2,3], [2,4]
+                                         , [1..6], [1..6], [1..6], [2], [4], [1]
+                                         , [1..6], [1..6], [1..6], [1..6], [1..6], [3]
+                                         , [4], [1..6], [1..6], [1..6], [1..6], [1..6]
+                                         , [1..6], [1..6], [2], [1..6], [1..6], [1..6]])
+
+singleBoxBoardConstrained = Board 3 2 (Seq.fromList [ [1,2], [3], [1,4], [5], [6], [2,4]
+                                                    , [2,6], [5], [4,6], [1,4,3], [1,2,3], [2,4]
+                                                    , [1..6], [1..6], [1..6], [2], [4], [1]
+                                                    , [1..6], [1..6], [1..6], [1..6], [1..6], [3]
+                                                    , [4], [1..6], [1..6], [1..6], [1..6], [1..6]
+                                                    , [1..6], [1..6], [2], [1..6], [1..6], [1..6]])
+
+singleBoxGroupsTests = testGroup "singleBoxGroups"
+  ( let rowOne = singleBoxGroups (map ((,) 0) [0..5]) [(0,0), (0,1), (0,2), (1,0), (1,1), (1,2)] singleBoxBoard
+        rowTwo = singleBoxGroups (map ((,) 1) [0..5]) [(0,0), (0,1), (0,2), (1,0), (1,1), (1,2)] singleBoxBoard
+    in
+      [ testCase "(1,0)" $ getCell rowOne (1,0) @?= [2,6]
+      , testCase "(1,2)" $ getCell rowOne (1,2) @?= [4,6]
+      , testCase "all" $ rowOne @?= singleBoxBoardConstrained
+      , testCase "all row two" $ rowTwo @?= singleBoxBoard
+      ])
+
+singleBoxLineTests = testGroup "singleBoxLine"
+  ( let doRun = singleBoxLine singleBoxBoard (map ((,) 0) [0..5])
+    in
+      [ testCase "(1,0)" $ getCell doRun (1,0) @?= [2,6]
+      , testCase "(1,2)" $ getCell doRun (1,2) @?= [4,6]
+      , testCase "all" $ doRun @?= singleBoxBoardConstrained
+      ])
+
+singleBoxTests = testGroup "singleBox"
+  [ testCase "all" $ singleBox singleBoxBoard @?= singleBoxBoardConstrained
   ]

@@ -4,10 +4,11 @@ import Data.List (group, foldl', (\\), sort, intersect)
 
 import Board
 
-opOnGroups :: (Board -> [Position] -> Board) -> Board -> Board
-opOnGroups op board@(Board m n contents) = doGroup (rows m n) $ doGroup (cols m n) $ doGroup (boxes m n) board
+
+opOnGroups :: (Board -> [Position] -> Board) -> [Int -> Int -> [[Position]]] -> Board -> Board
+opOnGroups op groups board@(Board m n _) = foldl' doGroup board groups
   where
-    doGroup poss b = foldl' op b poss
+    doGroup b group = foldl' op b (group m n)
 
 
 singlesOnly :: [a] -> [a]
@@ -16,16 +17,22 @@ singlesOnly xs | length xs == 1 = xs
 
 
 
-removeSolved :: Board -> [Position] -> Board
-removeSolved board cells = foldl' (modify (\\ defined)) board unknownPositions
+removeSolved :: Board -> Board
+removeSolved = opOnGroups removeSolvedGroup [rows, cols, boxes]
+
+removeSolvedGroup :: Board -> [Position] -> Board
+removeSolvedGroup board cells = foldl' (modify (\\ defined)) board unknownPositions
   where
     defined = map (getCell board) cells >>= singlesOnly
     unknownPositions = filter ((> 1) . length . getCell board) cells
 
 
 
-fixSingles :: Board -> [Position] -> Board
-fixSingles board cells = foldl' (modify (maybeFix toFix)) board unknownPositions
+fixSingles :: Board -> Board
+fixSingles = opOnGroups fixSinglesGroup [rows, cols, boxes]
+
+fixSinglesGroup :: Board -> [Position] -> Board
+fixSinglesGroup board cells = foldl' (modify (maybeFix toFix)) board unknownPositions
   where
     unknownPositions = filter ((> 1) . length . getCell board) cells
     toFix = (group . sort . concat) (map (getCell board) cells) >>= singlesOnly
@@ -35,3 +42,23 @@ maybeFix toFix current | length intersection > 0 = intersection
                        | otherwise               = current
   where
     intersection = intersect current toFix
+
+
+
+singleBox :: Board -> Board
+singleBox = opOnGroups singleBoxLine [rows]--, cols]
+
+singleBoxLine :: Board -> [Position] -> Board
+singleBoxLine board@(Board m n _) line = foldl' runBox board boxesInLine
+  where
+    boxesInLine = filter (not . null . (intersect line)) (boxes m n)
+    runBox b box = singleBoxGroups box line $ singleBoxGroups line box b
+
+singleBoxGroups :: [Position] -> [Position] -> Board -> Board
+singleBoxGroups allGroup removeGroup board = foldl' (modify (\\ canRemove)) board removeGroupOthers
+  where
+    both = allGroup `intersect` removeGroup
+    allGroupOthers = allGroup \\ removeGroup
+    removeGroupOthers = removeGroup \\ allGroup
+    unknownIn = concat . filter ((/= 1) . length) . map (getCell board)
+    canRemove = unknownIn both \\ unknownIn allGroupOthers
