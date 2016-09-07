@@ -10,7 +10,7 @@ import Backtracking
 
 main :: IO ()
 main = do
-  handle <- openFile "board-4x4-hard.txt" ReadMode
+  handle <- openFile "board-3x3.txt" ReadMode
   input <- hGetContents handle
   rng <- getStdGen
   putStrLn $ case parseBoard input of

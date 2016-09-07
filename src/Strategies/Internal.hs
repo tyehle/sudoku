@@ -1,5 +1,6 @@
 module Strategies.Internal where
 
+import Debug.Trace (trace)
 import Data.List (group, foldl', (\\), sort, intersect)
 
 import Board
@@ -14,6 +15,11 @@ opOnGroups op groups board@(Board m n _) = foldl' doGroup board groups
 singlesOnly :: [a] -> [a]
 singlesOnly xs | length xs == 1 = xs
                | otherwise      = []
+
+
+goodNub :: Ord a => [a] -> [a]
+goodNub [] = []
+goodNub xs = head . group . sort $ xs
 
 
 
@@ -55,10 +61,10 @@ singleBoxLine board@(Board m n _) line = foldl' runBox board boxesInLine
     runBox b box = singleBoxGroups box line $ singleBoxGroups line box b
 
 singleBoxGroups :: [Position] -> [Position] -> Board -> Board
-singleBoxGroups allGroup removeGroup board = foldl' (modify (\\ canRemove)) board removeGroupOthers
+singleBoxGroups allGroup removeGroup board = foldl' (modify (\\ canRemove)) board removeGroupOthersUnknown
   where
     both = allGroup `intersect` removeGroup
     allGroupOthers = allGroup \\ removeGroup
-    removeGroupOthers = removeGroup \\ allGroup
+    removeGroupOthersUnknown = filter ((/= 1) . length . getCell board) $ removeGroup \\ allGroup
     unknownIn = concat . filter ((/= 1) . length) . map (getCell board)
-    canRemove = unknownIn both \\ unknownIn allGroupOthers
+    canRemove = (goodNub . unknownIn) both \\ unknownIn allGroupOthers
