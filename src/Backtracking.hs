@@ -42,7 +42,7 @@ collectMostConstrained board (pos:others) size found | currentSize < size  = col
 
 choice :: [a] -> State StdGen a
 choice []    = error "cannot choose from an empty list"
-choice items = fmap (items !!) $ dieRoll $ length items
+choice items = fmap (items !!) . dieRoll . length $ items
 
 
 dieRoll :: Int -> State StdGen Int

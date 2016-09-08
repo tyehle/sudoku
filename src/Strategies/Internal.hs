@@ -50,7 +50,7 @@ maybeFix toFix current | length intersection > 0 = intersection
 
 
 singleBox :: Board -> Board
-singleBox = opOnGroups singleBoxLine [rows]--, cols]
+singleBox = opOnGroups singleBoxLine [rows, cols]
 
 singleBoxLine :: Board -> [Position] -> Board
 singleBoxLine board@(Board m n _) line = foldl' runBox board boxesInLine
