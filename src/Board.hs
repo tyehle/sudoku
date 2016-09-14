@@ -34,7 +34,7 @@ padString :: Int -> String -> String
 padString width s | even toAdd = concat [halfSpace, s, halfSpace]
                   | otherwise  = concat [halfSpace, s, " ", halfSpace]
   where
-    toAdd = width - (length s)
+    toAdd = width - length s
     halfSpace = replicate (toAdd `quot` 2) ' '
 
 showOptions :: [Int] -> String
@@ -101,5 +101,5 @@ boxes m n = map boxFromCorner corners
   where
     indicesN = [0..n-1]
     indicesM = [0..m-1]
-    corners = concat $ map (\row -> map (\col -> (row*n, col*m)) indicesN) indicesM
-    boxFromCorner (y, x) = concat $ map (\row -> map (\col -> (row + y, col + x)) indicesM) indicesN
+    corners = concatMap (\row -> map (\col -> (row*n, col*m)) indicesN) indicesM
+    boxFromCorner (y, x) = concatMap (\row -> map (\col -> (row + y, col + x)) indicesM) indicesN

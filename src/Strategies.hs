@@ -17,7 +17,7 @@ execStrats strats input = case composeM input (map failWhenChanged strats) of
   Right done -> done
 
 composeM :: (Foldable t, Monad m) => a -> t (a -> m a) -> m a
-composeM start cs = foldr (=<<) (return start) cs
+composeM = foldr (=<<) . return
 
 failWhenChanged :: (Board -> Board) -> Board -> Either Board Board
 failWhenChanged fn input | changed == input = Right input

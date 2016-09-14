@@ -42,10 +42,10 @@ fixSinglesGroup board cells = foldl' (modify (maybeFix toFix)) board unknownPosi
     toFix = (group . sort . concat) (map (getCell board) cells) >>= singlesOnly
 
 maybeFix :: [Int] -> [Int] -> [Int]
-maybeFix toFix current | length intersection > 0 = intersection
+maybeFix toFix current | not $ null intersection = intersection
                        | otherwise               = current
   where
-    intersection = intersect current toFix
+    intersection = current `intersect` toFix
 
 
 
@@ -55,7 +55,7 @@ singleBox = opOnGroups singleBoxLine [rows, cols]
 singleBoxLine :: Board -> [Position] -> Board
 singleBoxLine board@(Board m n _) line = foldl' runBox board boxesInLine
   where
-    boxesInLine = filter (not . null . (intersect line)) (boxes m n)
+    boxesInLine = filter (not . null . intersect line) $ boxes m n
     runBox b box = singleBoxGroups box line $ singleBoxGroups line box b
 
 singleBoxGroups :: [Position] -> [Position] -> Board -> Board
@@ -65,5 +65,5 @@ singleBoxGroups allGroup removeGroup board = foldl' (modify (\\ canRemove)) boar
     both = allGroup `intersect` removeGroup
     uniqueUnknownInBoth = goodNub . concat . filter ((/= 1) . length) . map (getCell board) $ both
     allGroupOthers = allGroup \\ removeGroup
-    allGroupOthersContents = concat . map (getCell board) $ allGroupOthers
+    allGroupOthersContents = concatMap (getCell board) allGroupOthers
     canRemove = uniqueUnknownInBoth \\ allGroupOthersContents

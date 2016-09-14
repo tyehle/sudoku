@@ -25,7 +25,7 @@ sepEndByN n p sep = sepByN n p sep <* optional sep
 
 
 number :: Parser Int
-number = fmap read (many1 digit)
+number = read <$> many1 digit
 
 dimension :: Parser (Int, Int)
 dimension = do
@@ -37,11 +37,11 @@ dimension = do
   return (m, n)
 
 entry :: Parser [Int]
-entry =  (fmap return number)
-     <|> (char '_' >> fmap (enumFromTo 1) getState)
+entry =  return <$> number
+     <|> (char '_' >> enumFromTo 1 <$> getState)
 
 entries :: Parser (Seq [Int])
-entries = getState >>= \total -> fmap Seq.fromList $ sepEndByN (total*total) entry spaces
+entries = getState >>= \total -> Seq.fromList <$> sepEndByN (total*total) entry spaces
 
 board :: Parser Board
 board = do
