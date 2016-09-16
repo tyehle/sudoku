@@ -67,3 +67,18 @@ singleBoxGroups allGroup removeGroup board = foldl' (modify (\\ canRemove)) boar
     allGroupOthers = allGroup \\ removeGroup
     allGroupOthersContents = concatMap (getCell board) allGroupOthers
     canRemove = uniqueUnknownInBoth \\ allGroupOthersContents
+
+
+
+disjointSubset :: Board -> Board
+disjointSubset = opOnGroups disjointSubsetGroup [rows, cols, boxes]
+
+disjointSubsetGroup :: Board -> [Position] -> Board
+disjointSubsetGroup board group = board
+  where
+    unknownDisjointSubsets = filter ((> 1) . length) $ findDisjointSets (map (getCell board) group)
+
+findDisjointSets :: Ord a => [[a]] -> [[a]]
+findDisjointSets cells = map head . filter (\equalCells -> length equalCells == (length . head) equalCells) $ equalGroups
+  where
+    equalGroups = group . sort $ map sort cells
