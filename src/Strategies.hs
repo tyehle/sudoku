@@ -1,5 +1,5 @@
 module Strategies
-  ( constrain
+  ( constrain, execStrats
   ) where
 
 import Strategies.Internal

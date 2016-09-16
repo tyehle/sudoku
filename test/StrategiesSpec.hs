@@ -8,6 +8,7 @@ import qualified Data.Sequence as Seq
 import Data.List (foldl')
 
 import Board
+import Parser(parseBoard)
 import Strategies
 import Strategies.Internal
 
@@ -20,6 +21,7 @@ strategiesTests = testGroup "board tests"
   , singleBoxGroupsTests
   , singleBoxLineTests
   , singleBoxTests
+  , disjointSubsetTests
   ]
 
 
@@ -94,4 +96,34 @@ singleBoxLineTests = testGroup "singleBoxLine"
 
 singleBoxTests = testGroup "singleBox"
   [ testCase "all" $ singleBox singleBoxBoard @?= singleBoxBoardConstrained
+  ]
+
+
+
+forceParseBoard :: String -> Board
+forceParseBoard = either (const (error "Failed to parse board")) id . parseBoard
+
+disjointSubsetBoard :: Board
+disjointSubsetBoard = forceParseBoard "3 3 \
+                                      \1 9 2   _ _ 7   8 6 _ \
+                                      \_ 6 7   _ _ 9   4 1 2 \
+                                      \8 _ 4   _ _ _   7 _ 9 \
+
+                                      \_ _ 9   _ 5 _   2 _ _ \
+                                      \_ _ 6   7 _ 3   9 _ 1 \
+                                      \_ 1 _   _ 9 _   6 4 _ \
+
+                                      \9 _ _   _ _ _   1 2 8 \
+                                      \_ 4 1   _ _ _   5 9 6 \
+                                      \6 2 8   9 1 5   3 7 4 "
+
+disjointSubsetTests = testGroup "disjointSubset"
+  [ testCase "big scope" $ isSolved (execStrats [removeSolved, disjointSubset] disjointSubsetBoard) @?= True
+  , testGroup "findDisjointSets"
+    [ testCase "single" $ findDisjointSets [[1]] @?= [[1]]
+    , testCase "2x2" $ findDisjointSets [[1,2], [1,2]] @?= [[1,2]]
+    , testCase "2x2 out of order" $ findDisjointSets [[1,2], [2,1]] @?= [[1,2]]
+    , testCase "2x2 + 1" $ findDisjointSets [[1,2], [3,4], [2,1]] @?= [[1,2]]
+    , testCase "many" $ findDisjointSets [[1,2], [3], [4,5,6], [2,1], [6,5,4], [8,9], [5,6,4]] @?= [[1,2], [3], [4,5,6]]
+    ]
   ]
