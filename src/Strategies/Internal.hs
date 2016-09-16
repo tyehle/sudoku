@@ -74,9 +74,12 @@ disjointSubset :: Board -> Board
 disjointSubset = opOnGroups disjointSubsetGroup [rows, cols, boxes]
 
 disjointSubsetGroup :: Board -> [Position] -> Board
-disjointSubsetGroup board group = board
+disjointSubsetGroup board group = foldl' (modify updateCell) board group
   where
     unknownDisjointSubsets = filter ((> 1) . length) $ findDisjointSets (map (getCell board) group)
+    updateCell cell = foldl' removePossibilities cell unknownDisjointSubsets
+    removePossibilities cell subset | cell == subset = cell
+                                    | otherwise      = cell \\ subset
 
 findDisjointSets :: Ord a => [[a]] -> [[a]]
 findDisjointSets cells = map head . filter (\equalCells -> length equalCells == (length . head) equalCells) $ equalGroups

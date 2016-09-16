@@ -7,7 +7,7 @@ import Board
 
 
 constrain :: Board -> Board
-constrain = execStrats [removeSolved, fixSingles, singleBox]
+constrain = execStrats [removeSolved, fixSingles, singleBox, disjointSubset]
 
 
 
