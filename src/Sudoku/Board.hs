@@ -1,4 +1,4 @@
-module Board
+module Sudoku.Board
   ( Board(..), empty
   , Position(..)
   , prettyPrint, padString, showOptions, groupN, showBoard

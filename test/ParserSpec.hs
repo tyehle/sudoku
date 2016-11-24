@@ -5,9 +5,9 @@ module ParserSpec
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Parser
-import Parser.Internal
-import Board (Board(..))
+import Sudoku.Parser
+import Sudoku.Parser.Internal
+import Sudoku.Board (Board(..))
 
 import Text.Parsec
 import qualified Data.Sequence as Seq

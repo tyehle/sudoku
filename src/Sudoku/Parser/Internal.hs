@@ -1,7 +1,7 @@
-module Parser.Internal where
+module Sudoku.Parser.Internal where
 
 import Data.Char (digitToInt)
-import Board (Board(..))
+import Sudoku.Board (Board(..))
 import Text.Parsec
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq

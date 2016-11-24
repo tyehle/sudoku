@@ -4,9 +4,9 @@ where
 import System.IO
 import System.Random
 
-import Parser
-import Board
-import Backtracking
+import Sudoku.Parser
+import Sudoku.Board
+import Sudoku.Backtracking
 
 main :: IO ()
 main = do
@@ -17,4 +17,3 @@ main = do
     Left err -> show err
     Right b -> maybe "not solvable" prettyPrint $ solve rng b
   hClose handle
-

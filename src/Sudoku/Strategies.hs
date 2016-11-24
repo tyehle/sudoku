@@ -1,9 +1,9 @@
-module Strategies
+module Sudoku.Strategies
   ( constrain, execStrats
   ) where
 
-import Strategies.Internal
-import Board
+import Sudoku.Strategies.Internal
+import Sudoku.Board
 
 
 constrain :: Board -> Board

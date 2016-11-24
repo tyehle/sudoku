@@ -1,7 +1,7 @@
-module Backtracking where
+module Sudoku.Backtracking where
 
-import Board
-import Strategies
+import Sudoku.Board
+import Sudoku.Strategies
 
 import System.Random
 import Control.Monad.State.Lazy (State, state, evalState)

@@ -1,8 +1,8 @@
-module Strategies.Internal where
+module Sudoku.Strategies.Internal where
 
 import Data.List (group, foldl', (\\), sort, intersect)
 
-import Board
+import Sudoku.Board
 
 
 opOnGroups :: (Board -> [Position] -> Board) -> [Int -> Int -> [[Position]]] -> Board -> Board

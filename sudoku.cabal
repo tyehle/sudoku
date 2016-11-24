@@ -15,7 +15,10 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Board, Parser, Parser.Internal, Strategies, Strategies.Internal, Backtracking
+  exposed-modules:     Sudoku.Board
+                     , Sudoku.Parser, Sudoku.Parser.Internal
+                     , Sudoku.Strategies, Sudoku.Strategies.Internal
+                     , Sudoku.Backtracking
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , parsec

@@ -7,10 +7,10 @@ import Test.Tasty.HUnit
 import qualified Data.Sequence as Seq
 import Data.List (foldl')
 
-import Board
-import Parser(parseBoard)
-import Strategies
-import Strategies.Internal
+import Sudoku.Board
+import Sudoku.Parser(parseBoard)
+import Sudoku.Strategies
+import Sudoku.Strategies.Internal
 
 strategiesTests = testGroup "board tests"
   [ opOnGroupsTests

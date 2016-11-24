@@ -6,7 +6,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 import qualified Data.Sequence as Seq
 
-import Board
+import Sudoku.Board
 
 boardTests = testGroup "board tests"
   [padStringTests

@@ -8,7 +8,7 @@ import System.Random
 import Control.Monad.State.Lazy
 import Data.Set
 
-import Backtracking
+import Sudoku.Backtracking
 
 
 backtrackingTests = testGroup "backtracking tests"
