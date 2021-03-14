@@ -85,3 +85,25 @@ findDisjointSets :: Ord a => [[a]] -> [[a]]
 findDisjointSets cells = map head . filter (\equalCells -> length equalCells == (length . head) equalCells) $ equalGroups
   where
     equalGroups = group . sort $ map sort cells
+
+
+
+disjointChain :: Board -> Board
+disjointChain = opOnGroups disjointChainGroup [rows, cols, boxes]
+
+disjointChainGroup :: Board -> [Position] -> Board
+disjointChainGroup board group = foldl' (removeChains chains) board unknownPositions
+  where
+    unknownPositions = filter ((> 1) . length . getCell board) group
+    possibleChains = filter ((> 1) . length) $ powerset unknownPositions
+    chains = filter (\chain -> length chain == (length . goodNub . map (getCell board)) chain) possibleChains
+
+removeChains :: [[Position]] -> Board -> Position -> Board
+removeChains chains board cell = modify (\\ numbersToRemove) board cell
+  where
+    chainsToRemove = filter (notElem cell) chains
+    numbersToRemove = goodNub $ concatMap (getCell board) $ concat chainsToRemove
+
+powerset :: [a] -> [[a]]
+powerset [] = [[]]
+powerset (x:xs) = powerset xs ++ map (x:) (powerset xs)

@@ -22,6 +22,7 @@ strategiesTests = testGroup "board tests"
   , singleBoxLineTests
   , singleBoxTests
   , disjointSubsetTests
+  , disjointChainTests
   ]
 
 
@@ -126,4 +127,18 @@ disjointSubsetTests = testGroup "disjointSubset"
     , testCase "2x2 + 1" $ findDisjointSets [[1,2], [3,4], [2,1]] @?= [[1,2]]
     , testCase "many" $ findDisjointSets [[1,2], [3], [4,5,6], [2,1], [6,5,4], [8,9], [5,6,4]] @?= [[1,2], [3], [4,5,6]]
     ]
+  ]
+
+
+
+disjointChainTests = testGroup "disjointChain"
+  [ testGroup "powerset"
+      [ testCase "empty" $ powerset [] @?= ([[]] :: [[Int]])
+      , testCase "single" $ powerset [1] @?= [[], [1]]
+      , testCase "many" $ powerset [4,2,1] @?= [[], [1], [2], [2,1], [4], [4,1], [4,2], [4,2,1]]
+      , testCase "duplicates" $ powerset [1,1] @?= [[], [1], [1], [1,1]]
+      ]
+  , testGroup "removeChains"
+      [ testCase "empty" $ removeChains [] (empty 2 3) (0,0) @?= empty 2 3
+      ]
   ]
